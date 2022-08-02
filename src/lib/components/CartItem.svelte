@@ -1,6 +1,6 @@
 <script>
 	export let item;
-
+	console.log(item);
 	const removeItem = async (lineId) => {
 		try {
 			const removeItemFromCart = await fetch('/api/remove-from-cart', {
@@ -13,6 +13,7 @@
 			})
 				.then((res) => res.json())
 				.then((data) => data);
+			console.log(removeItemFromCart);
 			// update localStorage;
 			localStorage.setItem('cartId', removeItemFromCart.id);
 			localStorage.setItem('cart', JSON.stringify(removeItemFromCart));
@@ -31,6 +32,7 @@
 		<a class="title" href={'/products/' + item.node.merchandise.product.title}
 			>{item.node.merchandise.product.title}</a
 		>
+		<p class="subtitle">{item.node.merchandise.title}</p>
 		<p>{item.node.merchandise.priceV2.amount}</p>
 		<p>QTY: x{item.node.quantity}</p>
 		<button
@@ -54,6 +56,14 @@
 			color: black;
 			text-transform: uppercase;
 			text-decoration: none;
+		}
+		.subtitle {
+			color: rgba(0, 0, 0, 0.4);
+			position: relative;
+			left: 0.5em;
+			&::before {
+				content: '';
+			}
 		}
 		.img-container {
 			img {

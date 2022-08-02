@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import CartItem from '../lib/components/CartItem.svelte';
-	let cart;
+	let cart = '';
 	let cartItems = [];
 	let subtotal;
 	let total;
@@ -15,12 +15,32 @@
 	onMount(() => {
 		// get cart details from localStorage
 		cart = JSON.parse(localStorage.getItem('cart'));
-		cartItems = cart.lines.edges;
-		subtotal = convertPrice(cart.estimatedCost.subtotalAmount.amount);
-		total = convertPrice(cart.estimatedCost.totalAmount.amount);
-		lineId = cart.id;
-		// console.log(cart);
+		if (cart) {
+			cartItems = cart.lines.edges;
+			subtotal = convertPrice(cart.estimatedCost.subtotalAmount.amount);
+			total = convertPrice(cart.estimatedCost.totalAmount.amount);
+			lineId = cart.id;
+			// console.log(cart);
+		}
 	});
+
+	const checkout = async () => {
+		try {
+			const checkoutCart = await fetch('/api/create-checkout', {
+				method: 'POST',
+				body: JSON.stringify({}),
+				headers: { 'content-type': 'application/json' }
+			})
+				.then((res) => res.json())
+				.then((data) => data);
+
+			const url = checkoutCart.shopifyResponse.cartCreate.cart.checkoutUrl;
+			const id = checkoutCart.shopifyResponse.cartCreate.cart.id;
+			console.log(url, id);
+		} catch (e) {
+			console.log(e);
+		}
+	};
 </script>
 
 <section class="cart">
@@ -39,7 +59,7 @@
 <section class="cart-details">
 	<p>subTotal: {subtotal}</p>
 	<p>Total: {total}</p>
-	<button class="checkout-btn">Checkout</button>
+	<button class="checkout-btn" on:click={checkout}>Checkout</button>
 </section>
 
 <style lang="scss">
