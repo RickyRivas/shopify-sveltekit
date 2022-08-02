@@ -1,0 +1,29 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    font-family: 'Expose',
+        sans-serif;
+}
+
+body {
+    word-wrap: break-word;
+    min-height: 100vh;
+}
+
+/* Scale font-szie from a min of 16px (at 320px viewpoort) to a maximum of 22px (at a 1000px viewport) */
+@media screen and (min-width: 320px) {
+    html {
+        font-size: calc(16px + 6 * ((100vw - 320px) / 680));
+    }
+}
+
+@media screen and (min-width: 1000px) {
+    html {
+        font-size: 20px;
+    }
+}
