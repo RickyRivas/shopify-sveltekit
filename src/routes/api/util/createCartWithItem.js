@@ -16,6 +16,7 @@ export async function createCartWithItem({
               id
               createdAt
               updatedAt
+              checkoutUrl
               lines(first:10) {
                 edges {
                   node {

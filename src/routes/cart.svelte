@@ -24,22 +24,9 @@
 		}
 	});
 
-	const checkout = async () => {
-		try {
-			const checkoutCart = await fetch('/api/create-checkout', {
-				method: 'POST',
-				body: JSON.stringify({}),
-				headers: { 'content-type': 'application/json' }
-			})
-				.then((res) => res.json())
-				.then((data) => data);
-
-			const url = checkoutCart.shopifyResponse.cartCreate.cart.checkoutUrl;
-			const id = checkoutCart.shopifyResponse.cartCreate.cart.id;
-			console.log(url);
-		} catch (e) {
-			console.log(e);
-		}
+	const checkout = () => {
+		const checkoutUrl = localStorage.getItem('checkoutUrl');
+		window.location = checkoutUrl;
 	};
 </script>
 

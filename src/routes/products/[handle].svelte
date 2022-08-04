@@ -44,9 +44,10 @@
 			});
 
 			const data = await addToCartResponse.json();
-
+			console.log(data);
 			// save new cart data to localstorage
 			localStorage.setItem('cartId', data.id);
+			localStorage.setItem('checkoutUrl', data.checkoutUrl);
 			localStorage.setItem('cart', JSON.stringify(data));
 			// reload helps update the cart count in header
 			location.reload();
