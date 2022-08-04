@@ -5,14 +5,14 @@ import {
 export async function POST() {
     const shopifyResponse = await postToShopify({
         query: `
-            mutation CreateCart {
-                cartCreate {
-                cart {
-                    checkoutUrl
-                    id
-                }
-                }
-            }
+             mutation CreateCart {
+                 cartCreate {
+                     cart {
+                         checkoutUrl
+                         id
+                     }
+                 }
+             }
             `,
         variables: {},
     })

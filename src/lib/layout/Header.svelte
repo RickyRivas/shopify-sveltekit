@@ -18,7 +18,13 @@
 		<div class="location">
 			<img src="/search.svg" alt="" width="25" height="25" />
 		</div>
-		<input type="search" placeholder="Search..." />
+		<input
+			type="search"
+			placeholder="Search..."
+			on:blur={() => {
+				showSearchBar = !showSearchBar;
+			}}
+		/>
 		<button>Search</button>
 	</form>
 </div>

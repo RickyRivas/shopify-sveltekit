@@ -36,7 +36,7 @@
 
 			const url = checkoutCart.shopifyResponse.cartCreate.cart.checkoutUrl;
 			const id = checkoutCart.shopifyResponse.cartCreate.cart.id;
-			console.log(url, id);
+			console.log(url);
 		} catch (e) {
 			console.log(e);
 		}
