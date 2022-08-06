@@ -6,7 +6,6 @@
 	let cart = '';
 	let cartItems = [];
 	let subtotal;
-	let total;
 	let lineId;
 
 	// Price formatting
@@ -21,7 +20,7 @@
 
 		if (cart) {
 			cartItems = cart.lines.edges;
-			total = convertPrice(cart.estimatedCost);
+			subtotal = convertPrice(cart.estimatedCost);
 			lineId = cart.id;
 		}
 	});
@@ -39,6 +38,7 @@
 			});
 
 			const data = await removeItemFromCartResponse.json();
+
 			// update local storage object
 			shopify.cartId = data.id;
 			shopify.estimatedCost = data.estimatedCost.totalAmount.amount;
@@ -50,6 +50,7 @@
 			cartCount.set(shopify.lines.edges.length);
 			// dom
 			cartItems = shopify.lines.edges;
+			subtotal = shopify.estimatedCost;
 		} catch (e) {
 			console.log(e, 'errrr');
 		}
@@ -76,7 +77,7 @@
 </section>
 <section class="cart-details">
 	<p>subTotal: {subtotal}</p>
-	<p>Total: {total}</p>
+	<p>Taxes and Shipping calculated at Checkout.</p>
 	<button class="checkout-btn" on:click={checkout} disabled={cartItems.length < 1 ? 'true' : ''}
 		>Checkout</button
 	>

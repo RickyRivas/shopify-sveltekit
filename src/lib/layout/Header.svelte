@@ -12,7 +12,11 @@
 	onMount(() => {
 		const shopify = JSON.parse(localStorage.getItem('shopify'));
 		if (shopify) {
-			cartCount.set(shopify.lines.edges.length);
+			if ((shopify.lines.length = 0)) {
+				cartCount.set(0);
+			} else {
+				cartCount.set(shopify.lines.edges.length);
+			}
 		}
 	});
 </script>

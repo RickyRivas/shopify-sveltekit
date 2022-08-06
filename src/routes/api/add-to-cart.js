@@ -1,9 +1,7 @@
 import {
     addItemToCart
 } from "./util/add-item-to-cart";
-import {
-    createCartWithItem
-} from "./util/createCartWithItem";
+
 export async function POST({
     request
 }) {
@@ -20,38 +18,36 @@ export async function POST({
 
     if (cartId) {
 
-        console.log('--------------------------------');
-        console.log('Adding item to existing cart...');
-        console.log('--------------------------------');
+        try {
+            console.log('--------------------------------');
+            console.log('Adding item to existing cart...');
+            console.log('--------------------------------');
+            const shopifyResponse = await addItemToCart({
+                cartId,
+                itemId,
+                quantity
+            })
+            // const data = JSON.stringify(shopifyResponse.cartLinesAdd.cart)
 
-        const shopifyResponse = await addItemToCart({
-            cartId,
-            itemId,
-            quantity
-        })
-        // const data = JSON.stringify(shopifyResponse.cartLinesAdd.cart)
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify(shopifyResponse.cartLinesAdd.cart)
-
+            return {
+                statusCode: 200,
+                body: JSON.stringify(shopifyResponse.cartLinesAdd.cart)
+            }
+        } catch (e) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({
+                    e
+                })
+            }
         }
-
     } else {
-        console.log('--------------------------------');
-        console.log('Creating new cart with item...');
-        console.log('--------------------------------');
-        // create new cart and add new item if no cartId is in localStorage
-        const createCartResponse = await createCartWithItem({
-            itemId,
-            quantity
-        });
-
-        // const data = JSON.stringify(createCartResponse.cartCreate.cart)
 
         return {
-            statusCode: 200,
-            body: JSON.stringify(createCartResponse.cartCreate.cart)
+            statusCode: 400,
+            body: JSON.stringify({
+                msg: 'Something went wrong, bud.'
+            })
         }
     }
 }

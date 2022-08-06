@@ -78,5 +78,6 @@ export const addItemToCart = async ({
     return shopifyResponse
   } catch (e) {
     console.log(e)
+    return e
   }
 }

@@ -49,8 +49,7 @@
 			createCart();
 		} else {
 			// get cart items length
-			const shopify = JSON.parse(localStorage.getItem('shopify'));
-			if (shopify) {
+			if (shopifyObject.lines.length >= 1) {
 				cartCount.set(shopify.lines.edges.length);
 			}
 		}

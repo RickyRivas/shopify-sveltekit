@@ -13,6 +13,7 @@ export const removeItemFromCart = async ({
           cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
             cart {
               id
+              checkoutUrl
               lines(first: 10) {
                 edges {
                   node {
