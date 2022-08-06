@@ -1,11 +1,14 @@
 <script>
+	import { cartCount } from './../stores.js';
 	import { onMount } from 'svelte';
 	import CartItem from '../lib/components/CartItem.svelte';
+
 	let cart = '';
 	let cartItems = [];
 	let subtotal;
 	let total;
 	let lineId;
+
 	// Price formatting
 	const convertPrice = (itemPrice) => {
 		const amount = Number(itemPrice).toFixed(2);
@@ -14,18 +17,46 @@
 
 	onMount(() => {
 		// get cart details from localStorage
-		cart = JSON.parse(localStorage.getItem('cart'));
+		cart = JSON.parse(localStorage.getItem('shopify'));
+
 		if (cart) {
 			cartItems = cart.lines.edges;
-			subtotal = convertPrice(cart.estimatedCost.subtotalAmount.amount);
-			total = convertPrice(cart.estimatedCost.totalAmount.amount);
+			total = convertPrice(cart.estimatedCost);
 			lineId = cart.id;
-			// console.log(cart);
 		}
 	});
 
+	const removeItem = async (lineId) => {
+		let shopify = JSON.parse(localStorage.getItem('shopify'));
+		try {
+			const removeItemFromCartResponse = await fetch('/api/remove-from-cart', {
+				method: 'POST',
+				body: JSON.stringify({
+					cartId: JSON.parse(localStorage.getItem('shopify')).cartId,
+					lineId
+				}),
+				headers: { 'content-type': 'application/json' }
+			});
+
+			const data = await removeItemFromCartResponse.json();
+			// update local storage object
+			shopify.cartId = data.id;
+			shopify.estimatedCost = data.estimatedCost.totalAmount.amount;
+			shopify.checkoutUrl = data.checkoutUrl;
+			shopify.lines = data.lines;
+			// setting new obj to LS
+			localStorage.setItem('shopify', JSON.stringify(shopify));
+			// update cart counts
+			cartCount.set(shopify.lines.edges.length);
+			// dom
+			cartItems = shopify.lines.edges;
+		} catch (e) {
+			console.log(e, 'errrr');
+		}
+	};
+
 	const checkout = () => {
-		const checkoutUrl = localStorage.getItem('checkoutUrl');
+		const checkoutUrl = JSON.parse(localStorage.getItem('shopify')).checkoutUrl;
 		window.location = checkoutUrl;
 	};
 </script>
@@ -34,7 +65,7 @@
 	<h1>Your Cart</h1>
 	{#if cartItems.length > 0}
 		{#each cartItems as item}
-			<CartItem {item} />
+			<CartItem {item} on:remove-item={(e) => removeItem(e.detail)} />
 		{/each}
 	{:else}
 		<section>
@@ -46,7 +77,9 @@
 <section class="cart-details">
 	<p>subTotal: {subtotal}</p>
 	<p>Total: {total}</p>
-	<button class="checkout-btn" on:click={checkout}>Checkout</button>
+	<button class="checkout-btn" on:click={checkout} disabled={cartItems.length < 1 ? 'true' : ''}
+		>Checkout</button
+	>
 </section>
 
 <style lang="scss">
@@ -80,5 +113,8 @@
 		justify-content: center;
 		align-items: center;
 		border: 0;
+		&:disabled {
+			opacity: 0.8;
+		}
 	}
 </style>

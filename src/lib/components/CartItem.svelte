@@ -1,27 +1,7 @@
 <script>
+	import { createEventDispatcher } from 'svelte';
+	const dispatch = createEventDispatcher();
 	export let item;
-	console.log(item);
-	const removeItem = async (lineId) => {
-		try {
-			const removeItemFromCart = await fetch('/api/remove-from-cart', {
-				method: 'POST',
-				body: JSON.stringify({
-					cartId: localStorage.getItem('cartId'),
-					lineId
-				}),
-				headers: { 'content-type': 'application/json' }
-			})
-				.then((res) => res.json())
-				.then((data) => data);
-			console.log(removeItemFromCart);
-			// update localStorage;
-			localStorage.setItem('cartId', removeItemFromCart.id);
-			localStorage.setItem('cart', JSON.stringify(removeItemFromCart));
-			location.reload();
-		} catch (e) {
-			console.log(e, 'errrr');
-		}
-	};
 </script>
 
 <div class="cart-item">
@@ -35,10 +15,11 @@
 		<p class="subtitle">{item.node.merchandise.title}</p>
 		<p>{item.node.merchandise.priceV2.amount}</p>
 		<p>QTY: x{item.node.quantity}</p>
+		<!-- dispatching event and passing up data-->
 		<button
 			class="remove-btn"
 			on:click={() => {
-				removeItem(item.node.id);
+				dispatch('remove-item', item.node.id);
 			}}>Remove</button
 		>
 	</div>

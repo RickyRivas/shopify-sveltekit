@@ -1,5 +1,6 @@
 <script>
 	import Header from './../lib/layout/Header.svelte';
+	import Footer from './../lib/layout/Footer.svelte';
 	import global from '../global.css';
 </script>
 
@@ -7,11 +8,4 @@
 <main>
 	<slot />
 </main>
-
-<style lang="scss">
-	main {
-		@media only screen and (min-width: 768px) {
-			padding: 1em;
-		}
-	}
-</style>
+<Footer />

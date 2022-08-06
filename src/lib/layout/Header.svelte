@@ -1,14 +1,18 @@
 <script>
-	// import
 	import { onMount } from 'svelte';
+	import { cartCount } from '../../stores';
 
-	let count = 0;
-	let cart;
+	let count;
 	let showSearchBar = false;
+
+	cartCount.subscribe((data) => {
+		count = data;
+	});
+
 	onMount(() => {
-		cart = JSON.parse(localStorage.getItem('cart'));
-		if (cart) {
-			count = cart.lines.edges.length;
+		const shopify = JSON.parse(localStorage.getItem('shopify'));
+		if (shopify) {
+			cartCount.set(shopify.lines.edges.length);
 		}
 	});
 </script>
@@ -28,6 +32,7 @@
 		<button>Search</button>
 	</form>
 </div>
+
 <header>
 	<a href="/">
 		<img src="/RivasWebDesigns.svg" alt="" class="logo" />
