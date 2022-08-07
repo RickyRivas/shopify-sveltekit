@@ -63,24 +63,30 @@
 </script>
 
 <section class="cart">
-	<h1>Your Cart</h1>
+	<h1>Your Cart:</h1>
 	{#if cartItems.length > 0}
 		{#each cartItems as item}
 			<CartItem {item} on:remove-item={(e) => removeItem(e.detail)} />
 		{/each}
 	{:else}
-		<section>
+		<section class="empty-msg">
 			<p class="">Your cart is empty, fill it up!</p>
-			<a href="/" class=""> Back to Products </a>
+			<a href="/products" class="back">Back to Products</a>
 		</section>
 	{/if}
 </section>
 <section class="cart-details">
-	<p>subTotal: {subtotal}</p>
-	<p>Taxes and Shipping calculated at Checkout.</p>
-	<button class="checkout-btn" on:click={checkout} disabled={cartItems.length < 1 ? 'true' : ''}
-		>Checkout</button
-	>
+	<div class="subtotal">
+		<p>subTotal:</p>
+		<p>${subtotal}</p>
+	</div>
+	<div class="total">
+		<p>Taxes and Shipping calculated at Checkout.</p>
+	</div>
+	<button class="checkout-btn" on:click={checkout} disabled={cartItems.length < 1 ? 'true' : ''}>
+		<p>Secure Checkout</p>
+		<img class="" src="/lock.svg" alt="" width="25" height="25" loading="lazy" decoding="async" />
+	</button>
 </section>
 
 <style lang="scss">
@@ -101,19 +107,57 @@
 		width: 100%;
 		max-width: 1200px;
 		padding: 1em;
+		margin: auto;
 	}
-
-	.checkout-btn {
-		width: 10em;
+	.empty-msg {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		max-width: 1200px;
+		margin: auto;
+		flex-direction: column;
+		p {
+			margin-bottom: 0.5em;
+		}
+		.back {
+			width: 10em;
+			background-color: #000;
+			color: white;
+			text-decoration: none;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 0.5em 1em;
+		}
+	}
+	.subtotal {
+		display: flex;
 		padding: 0.5em 0;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+		text-transform: uppercase;
+	}
+	.total {
+		padding: 0.5em 0;
+		text-align: center;
+	}
+	.checkout-btn {
+		width: 100%;
+		padding: 1em;
 		color: #000;
 		text-decoration: none;
 		background-color: #212529;
 		color: #fff;
 		display: flex;
-		justify-content: center;
+		justify-content: space-between;
 		align-items: center;
 		border: 0;
+		text-transform: uppercase;
+		img {
+			filter: invert(1);
+		}
 		&:disabled {
 			opacity: 0.8;
 		}
