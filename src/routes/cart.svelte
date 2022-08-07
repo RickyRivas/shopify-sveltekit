@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import CartItem from '../lib/components/CartItem.svelte';
 
-	let cart = '';
+	let shopify = '';
 	let cartItems = [];
 	let subtotal;
 	let lineId;
@@ -16,12 +16,27 @@
 
 	onMount(() => {
 		// get cart details from localStorage
-		cart = JSON.parse(localStorage.getItem('shopify'));
+		shopify = JSON.parse(localStorage.getItem('shopify'));
 
-		if (cart) {
-			cartItems = cart.lines.edges;
-			subtotal = convertPrice(cart.estimatedCost);
-			lineId = cart.id;
+		const setTotalAndLine = () => {
+			subtotal = convertPrice(shopify.estimatedCost);
+			lineId = shopify.id;
+		};
+
+		if (shopify) {
+			if (shopify.lines == 0) {
+				cartItems = shopify.lines;
+				setTotalAndLine();
+			} else if (shopify.lines.edges == 0) {
+				cartItems = shopify.lines.edges;
+				setTotalAndLine();
+			} else {
+				cartItems = shopify.lines.edges;
+				setTotalAndLine();
+			}
+		} else {
+			console.log('no shop obj');
+			return;
 		}
 	});
 

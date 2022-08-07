@@ -11,7 +11,11 @@
 	onMount(() => {
 		const shopify = JSON.parse(localStorage.getItem('shopify'));
 		if (shopify) {
-			if ((shopify.lines.length = 0)) {
+			if (shopify.lines == 0) {
+				// empty from new cart
+				cartCount.set(0);
+			} else if (shopify.lines.edges == 0) {
+				// empty from clearing cart from cart.svelte
 				cartCount.set(0);
 			} else {
 				cartCount.set(shopify.lines.edges.length);

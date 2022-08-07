@@ -1,9 +1,9 @@
 <script context="module">
-	// Importings
+	// Importing
 	import OptionToggler from '../../lib/components/OptionToggler.svelte';
 	import QuantityWidget from '../../lib/components/QuantityWidget.svelte';
 	import { getProductDetails, cartCount } from './../../stores.js';
-
+	import { goto } from '$app/navigation';
 	export async function load({ params }) {
 		// getting the full product from shopify
 
@@ -27,7 +27,8 @@
 	let selectedPrice = product.priceRange.minVariantPrice.amount;
 	let totalInStock = selectedProduct.quantityAvailable;
 	let quantity = 1;
-
+	// add to cart success func
+	let addedToCart = false;
 	// update product variant after user changes option
 	const updateSelectedProduct = (id) => {
 		const newlySelectedProduct = productVariants.find((p) => p.id === id);
@@ -36,6 +37,8 @@
 		totalInStock = newlySelectedProduct.quantityAvailable;
 		// reset after changing product
 		quantity = 1;
+		//
+		addedToCart = false;
 	};
 
 	// add to cart and update local storage object
@@ -63,10 +66,23 @@
 			cartCount.set(shopify.lines.edges.length);
 			// setting new obj to LS
 			localStorage.setItem('shopify', JSON.stringify(shopify));
+			// set addedToCart to true
+			addedToCart = !addedToCart;
 		} catch (error) {
 			// todo: error handling
 			console.log(error);
+			addedToCart = 'error';
 		}
+	};
+	// checkout
+	const checkout = () => {
+		const checkoutUrl = JSON.parse(localStorage.getItem('shopify')).checkoutUrl;
+		window.location = checkoutUrl;
+	};
+	// 'Quick buy' - goto checkout url if no items in cart and user wants to quick buy an item
+	// else go to cart page and add item
+	const quickBuy = async () => {
+		console.log('quick buy');
 	};
 	// Price formatting
 	const convertPrice = (itemPrice) => {
@@ -95,11 +111,33 @@
 			<div class="options-qty-atc">
 				<!-- binding child qty to parent qty -->
 				<QuantityWidget bind:quantity bind:maxCount={totalInStock} />
-				<button type="submit" on:click|preventDefault={addToCart} class="add-to-cart">
-					<p>Add To Cart</p>
+				<button
+					type="submit"
+					on:click|preventDefault={addToCart}
+					class="add-to-cart {addedToCart ? 'animate' : ''}"
+				>
+					{#if !addedToCart}
+						<p>Add To Cart</p>
+						<img
+							class=""
+							src="/shopping-cart.svg"
+							alt=""
+							width="25"
+							height="25"
+							loading="lazy"
+							decoding="async"
+						/>
+					{:else if addedToCart == 'error'}
+						<p>Error Adding item to cart...</p>
+					{:else}
+						<p>Item Added to cart!</p>
+					{/if}
+				</button>
+				<button class="buy-now" on:click={quickBuy}>
+					<p>Buy Now</p>
 					<img
 						class=""
-						src="/shopping-cart.svg"
+						src="/hand-shake.svg"
 						alt=""
 						width="25"
 						height="25"
@@ -155,22 +193,56 @@
 					flex-direction: column;
 					margin-bottom: 1em;
 
-					.add-to-cart {
+					.add-to-cart,
+					.buy-now {
 						border: 0;
 						padding: 1em;
 						width: 100%;
-						background-color: #000;
-						color: white;
+						background-color: black;
 						display: flex;
+						color: #fff;
 						justify-content: space-between;
 						align-items: center;
 						text-transform: uppercase;
+						position: relative;
+						overflow: hidden;
+						z-index: 1;
+
+						&::before {
+							content: '';
+							position: absolute;
+							width: 100%;
+							height: 100%;
+							background-color: #f1f1f1;
+							top: 0;
+							left: 0;
+							z-index: -1;
+							opacity: 0;
+							transition: all 0.5s;
+							transform: translateX(-100%);
+						}
 						img {
 							filter: invert(1);
+						}
+						& > p,
+						img {
+							z-index: 2;
+							position: relative;
 						}
 						@media only screen and (min-width: 768px) {
 							width: 10em;
 						}
+						&.animate {
+							color: #000;
+
+							&::before {
+								opacity: 1;
+								transform: translateX(0);
+							}
+						}
+					}
+					.add-to-cart {
+						margin-bottom: 0.2em;
 					}
 				}
 			}
